@@ -20,6 +20,7 @@ document.querySelector('#secret-trigger').addEventListener('click', () => {
   if (++secretClicks === 7) {
     document.querySelector('#page-title').classList.add('secret');
     document.querySelector('#page-title').innerHTML = '푸르르!<br /><span class="underline">우나 야하~야핫!</span>';
+    document.querySelector('footer').textContent = '푸르르! 우나~';
   }
 });
 
