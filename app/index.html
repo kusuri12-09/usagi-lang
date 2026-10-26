@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#fffdf5" />
+  <meta name="description" content="한국어 한마디를 우사기어로 바꿔 보세요." />
+  <title>우사기어 번역기</title>
+  <link rel="icon" type="image/svg+xml" href="./images/favicon.svg" />
+  <link rel="stylesheet" href="./styles.css" />
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar" aria-label="사이트 이름">
+      <div class="brand-icon" aria-hidden="true"><img src="./images/rabbit-ears.svg" alt="" /></div>
+      <span class="brand-name">USAGI<span class="brand-dot">.</span>LAB</span>
+    </header>
+
+    <main class="hero">
+      <section class="intro" aria-labelledby="page-title">
+        <div class="intro-text">
+        <button class="eyebrow" id="secret-trigger" type="button"><span class="eyebrow-sparkle" aria-hidden="true">✦</span> 우나야하야핫</button>
+        <h1 id="page-title">한마디를<br /><span class="underline">우사기어로!</span></h1>
+        <p class="intro-copy">하고 싶은 말을 적어 보세요.<br />귀엽고 엉뚱한 우사기어로 바꿔 드릴게요.</p>
+        </div>
+        <div class="mascot-scene">
+          <span class="scene-star star-one" aria-hidden="true">✳</span>
+          <span class="scene-star star-two" aria-hidden="true">✦</span>
+          <img class="usagi-illustration" src="./images/usagi.png" alt="활짝 웃는 우사기 캐릭터" />
+        </div>
+      </section>
+
+      <section class="translator-card" aria-label="우사기어 번역기">
+        <div class="card-topline"><span class="mini-dot"></span> USAGI TRANSLATOR <span class="card-topline-star" aria-hidden="true">✳</span></div>
+        <form id="translator-form">
+          <label for="source-text">번역할 말</label>
+          <textarea id="source-text" name="source-text" rows="4" placeholder="예: 오늘 정말 신나!" maxlength="500" required></textarea>
+          <button type="submit" id="translate-button">확인하고 번역하기</button>
+        </form>
+        <div class="result-card" aria-live="polite" aria-atomic="true">
+          <div class="result-label"><span class="result-label-icon" aria-hidden="true">✦</span> Result <button type="button" id="copy-result" disabled>복사</button></div>
+          <p id="result-text" class="result-text placeholder">여기에 우사기어가 나타나요!</p>
+          <p id="result-note" class="result-note">어떤 말이 나올지 기대해 주세요.</p>
+          <span class="result-doodle" aria-hidden="true">☺</span>
+        </div>
+      </section>
+    </main>
+    <footer>말이 달라져도 마음은 통해요 <span aria-hidden="true">♥</span></footer>
+  </div>
+</body>
+</html>
