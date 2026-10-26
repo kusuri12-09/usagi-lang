@@ -31,13 +31,17 @@ h1,h1.secret{font-size:clamp(50px,6vw,80px)}
 h1.secret .underline{white-space:normal;overflow-wrap:anywhere}
 .mascot-scene{position:relative;left:auto;bottom:auto;width:100%;max-width:380px;height:340px;justify-self:end}
 .mascot-scene:before{left:13%;bottom:8%}.usagi-illustration{width:90%;height:100%;left:5%;bottom:0}
+.usagi-illustration{animation:usagi-bob 3s ease-in-out infinite;transform-origin:center bottom}
+.scene-star{animation:star-twinkle 2.4s ease-in-out infinite alternate}.star-two{animation-delay:1.2s}
+@keyframes usagi-bob{50%{transform:translateY(-9px) rotate(2deg)}}
+@keyframes star-twinkle{50%{transform:scale(1.18);opacity:.65}}
 .translator-card{width:100%;max-width:none;margin:0}
 .translator-card:before{display:none}
 .result-card.is-revealed .result-text{animation:text-pop .45s cubic-bezier(.2,1.8,.5,1)}
 #translate-button:disabled{cursor:default;opacity:.8}
 @keyframes text-pop{from{opacity:.3;transform:translateY(14px) scale(.95)}to{opacity:1;transform:none}}
 @media(max-width:650px){.hero{padding:30px 5px 20px}.intro{grid-template-columns:1fr;gap:6px;padding:0}.mascot-scene{justify-self:center;height:300px;transform:none}.intro-copy{margin-top:26px}h1,h1.secret{font-size:clamp(50px,12vw,66px)}}
-@media(prefers-reduced-motion:reduce){.result-card.is-revealed .result-text{animation:none}}
+@media(prefers-reduced-motion:reduce){.result-card.is-revealed .result-text,.usagi-illustration,.scene-star{animation:none}}
 
 body{user-select:none}
 textarea,.result-text{user-select:text}
