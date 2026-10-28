@@ -1,0 +1,11 @@
+{
+  "name": "usagi-lang-discord-bot",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-10-28",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "triggers": { "crons": ["* * * * *"] },
+  "services": [{ "binding": "MCP", "service": "usagi-lang-mcp" }],
+  "durable_objects": { "bindings": [{ "name": "GATEWAY", "class_name": "DiscordGateway" }] },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["DiscordGateway"] }]
+}
