@@ -63,7 +63,10 @@ export function randomUsagi(input = '') {
   let expression: string;
   do {
     const roll = Math.random();
-    const length = wordCount === 1 ? (roll < 0.9 ? 1 : 2) : wordCount <= 3 ? (roll < 0.6 ? 1 : roll < 0.9 ? 2 : 3) : (roll < 0.4 ? 1 : roll < 0.75 ? 2 : 3);
+    const length = wordCount === 1 ? (roll < 0.7 ? 1 : 2)
+      : wordCount <= 3 ? (roll < 0.35 ? 1 : roll < 0.8 ? 2 : 3)
+      : wordCount < 10 ? (roll < 0.2 ? 1 : roll < 0.65 ? 2 : 3)
+      : (roll < 0.1 ? 1 : roll < 0.35 ? 2 : roll < 0.75 ? 3 : 4);
     const variantCount = wordCount === 1 ? 2 : wordCount <= 3 ? 3 : 5;
     const parts = Array.from({ length }, () => {
       const sound = longSounds[Math.floor(Math.random() * longSounds.length)];

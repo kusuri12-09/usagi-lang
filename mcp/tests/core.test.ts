@@ -23,7 +23,7 @@ test('unknown and negated inputs use a clearly marked random fallback', () => {
   }
 });
 
-test('random expressions use one to three sounds based on word count', () => {
+test('random expressions use one to four sounds based on word count', () => {
   const originalRandom = Math.random;
   const values = [0.95, 0.1, 0.5, 0.99];
   try {
@@ -37,6 +37,8 @@ test('random expressions use one to three sounds based on word count', () => {
     assert.equal(randomUsagi('안녕').expression, '유후후!');
     values.push(0, 0.7, 0.99);
     assert.equal(randomUsagi('오늘 우리 같이 놀자').expression, '유후후후후후!');
+    values.push(0.99, 0, 0.1, 0.2, 0.3, 0, 0, 0);
+    assert.equal(randomUsagi('하나 둘 셋 넷 다섯 여섯 일곱 여덟 아홉 열').expression, '야, 하, 푸루루, 야!');
   } finally {
     Math.random = originalRandom;
   }
