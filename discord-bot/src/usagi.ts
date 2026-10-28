@@ -15,4 +15,4 @@ async function callUsagiTool(name: string, args: Record<string, unknown>, field:
 }
 
 export const translateWithMcp = (text: string) => callUsagiTool('translate_to_usagi', { text }, 'translated');
-export const replyWithMcp = () => callUsagiTool('generate_random_usagi', {}, 'expression');
+export const replyWithMcp = (text: string) => callUsagiTool('generate_usagi_reply', { text }, 'expression');

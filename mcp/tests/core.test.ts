@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { randomUsagi, reaction, translate } from '../src/core.ts';
+import { randomUsagi, reaction, replyToUsagi, translate } from '../src/core.ts';
+import repeatedSounds from '../../repeated-sounds.json' with { type: 'json' };
 
 test('known situations use dictionary expressions', () => {
   assert.deepEqual(reaction('birthday'), { reaction: '유후후후후후후후후후', tag: 'birthday', matched: true, generated: false });
@@ -9,10 +10,26 @@ test('known situations use dictionary expressions', () => {
   assert.equal(translate('하아?').translated, '하아?');
 });
 
-test('repeated sounds are returned unchanged, including exact-only expressions', () => {
-  for (const sound of ['푸루루', '이이이이야아아앗하아아아아', '야아아아아아아아하아아아아']) {
-    assert.deepEqual(translate(sound), { original: sound, translated: sound, tag: null, matched: true, generated: false });
+test('repeated sounds are returned unchanged, ignoring punctuation', () => {
+  for (const sound of Object.values(repeatedSounds).flat()) {
+    assert.equal(translate(sound).translated, sound);
+    assert.equal(replyToUsagi(sound), sound);
+    assert.equal(translate(`...${sound}?!`).translated, `...${sound}?!`);
+    assert.equal(replyToUsagi(`...${sound}?!`), `...${sound}?!`);
   }
+});
+
+test('reply echoes only selected dictionary expressions', () => {
+  for (const sound of ['우라라라라라라라라!', '야아아아아앗!', '하아아아아앗!', '야하야하야하!', '야핫! 으핫!', '푸루루루루루', '푸루야우라우라']) {
+    assert.equal(replyToUsagi(`~${sound}...?`), `~${sound}...?`);
+  }
+  assert.equal(replyToUsagi('우라라라라!!!'), '우라라라라!!!');
+  assert.equal(replyToUsagi('푸루루😀!!!'), '푸루루!!!');
+  assert.equal(translate('푸루루😀!!!').translated, '푸루루!!!');
+  assert.equal(replyToUsagi('야핫?! 으핫~'), '야핫?! 으핫~');
+  const reply = replyToUsagi('야하');
+  assert.notEqual(reply, '야하');
+  assert.match(reply, /^[가-힣,!?\. ~]+!$/);
 });
 
 test('unknown and negated inputs use a clearly marked random fallback', () => {
@@ -42,9 +59,11 @@ test('random expressions use one to four sounds based on word count', () => {
     values.push(0, 0.7, 0.99);
     assert.equal(randomUsagi('안녕').expression, '유후후!');
     values.push(0, 0.7, 0.99);
-    assert.equal(randomUsagi('오늘 우리 같이 놀자').expression, '유후후후후후!');
+    assert.equal(randomUsagi('오늘 우리 같이 놀자').expression, '야아아아아아앗!');
     values.push(0.99, 0, 0.1, 0.2, 0.3, 0, 0, 0);
     assert.equal(randomUsagi('하나 둘 셋 넷 다섯 여섯 일곱 여덟 아홉 열').expression, '야, 하, 푸루루, 야!');
+    values.push(0, 0.9, 0.99);
+    assert.equal(randomUsagi('하나 둘 셋 넷').expression, '이이이이이야아아아앗하아아아아아!');
   } finally {
     Math.random = originalRandom;
   }

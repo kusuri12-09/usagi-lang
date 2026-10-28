@@ -1,5 +1,5 @@
 import { DurableObject } from 'cloudflare:workers';
-import { randomUsagi, translate as translateText } from '../mcp/src/core.js';
+import { randomUsagi, replyToUsagi, translate as translateText } from '../mcp/src/core.js';
 
 export class DiscordGateway extends DurableObject {
   constructor(ctx, env) {
@@ -48,7 +48,7 @@ export class DiscordGateway extends DurableObject {
       }, packet.d.heartbeat_interval);
       socket.send(JSON.stringify({ op: 2, d: {
         token: this.env.DISCORD_BOT_TOKEN,
-        intents: 513,
+        intents: 513 | 32768,
         properties: { os: 'cloudflare', browser: 'usagi-worker', device: 'usagi-worker' },
       } }));
     } else if (packet.op === 11) {
@@ -68,7 +68,7 @@ export class DiscordGateway extends DurableObject {
 
   async reply(message) {
     if (!message.guild_id || message.author?.bot || message.webhook_id) return;
-    const content = randomUsagi().expression;
+    const content = replyToUsagi(message.content ?? '');
     const response = await fetch(`https://discord.com/api/v10/channels/${message.channel_id}/messages`, {
       method: 'POST',
       headers: { Authorization: `Bot ${this.env.DISCORD_BOT_TOKEN}`, 'Content-Type': 'application/json' },

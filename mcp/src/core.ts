@@ -4,6 +4,11 @@ import repeatedSoundsData from '../../repeated-sounds.json' with { type: 'json' 
 type Entry = { expression: string; meanings: string[]; tags: string[]; note?: string };
 const dictionary = dictionaryData as Entry[];
 const repeatedSounds = repeatedSoundsData as Record<string, string[]>;
+const repeatedExpressions = Object.values(repeatedSounds).flat();
+const replyExpressions = dictionary.filter(entry => ['우라라라라라라라라!', '야아아아아앗!', '하아아아아앗!', '야하야하야하!', '야핫! 으핫!', '푸루루루루루', '푸루야우라우라'].includes(entry.expression)).map(entry => entry.expression);
+const normalizeExpression = (value: string) => value.replace(/[^\p{L}\p{N}]/gu, '');
+const safeExpression = (value: string) => value.trim().replace(/[^\p{L}\p{N} ,!?.~\-]/gu, '');
+const matchExpression = (expressions: string[], text: string) => expressions.find(value => value === text) ?? expressions.find(value => normalizeExpression(value) === normalizeExpression(text));
 const byTag = new Map<string, Entry[]>();
 for (const entry of dictionary) {
   for (const tag of entry.tags) byTag.set(tag, [...(byTag.get(tag) ?? []), entry]);
@@ -47,9 +52,13 @@ export function reaction(tag: string) {
 export function translate(text: string) {
   const normalized = text.trim();
   const exact = dictionary.find(entry => entry.expression === normalized);
-  if (exact) return { original: text, translated: exact.expression, tag: exact.tags[0] ?? null, matched: true, generated: false };
-  if (Object.values(repeatedSounds).some(variants => variants.includes(normalized))) {
-    return { original: text, translated: normalized, tag: null, matched: true, generated: false };
+  if (exact) return { original: text, translated: safeExpression(normalized), tag: exact.tags[0] ?? null, matched: true, generated: false };
+  if (repeatedExpressions.includes(normalized)) return { original: text, translated: safeExpression(normalized), tag: null, matched: true, generated: false };
+  const normalizedEntry = dictionary.find(entry => normalizeExpression(entry.expression) === normalizeExpression(normalized));
+  if (normalizedEntry) return { original: text, translated: safeExpression(normalized), tag: normalizedEntry.tags[0] ?? null, matched: true, generated: false };
+  const repeated = matchExpression(repeatedExpressions, normalized);
+  if (repeated) {
+    return { original: text, translated: safeExpression(normalized), tag: null, matched: true, generated: false };
   }
   // shortcut: unsupported negative statements use patterns, expand when real examples show missed forms.
   const unsupported = /못했|실패|안\s*됐|슬프|속상/.test(normalized);
@@ -58,8 +67,18 @@ export function translate(text: string) {
   return { original: text, translated: result.reaction, tag: result.tag, matched: result.matched, generated: result.generated };
 }
 
+export function replyToUsagi(text: string) {
+  const input = text.trim();
+  const match = repeatedExpressions.find(value => value === input)
+    ?? replyExpressions.find(value => value === input)
+    ?? matchExpression(replyExpressions, input)
+    ?? matchExpression(repeatedExpressions, input);
+  return match ? safeExpression(input) : randomUsagi().expression;
+}
+
 const sounds = ['야', '하', '푸루', '우라', '으핫', '후응'];
-const longSounds = [...sounds, ...Object.keys(repeatedSounds).filter(sound => sound !== 'exact')];
+const shortSounds = [...sounds, ...Object.keys(repeatedSounds).filter(sound => sound !== '이야하' && sound !== '야하')];
+const longSounds = [...shortSounds, '이야하', '야하'];
 const separators = [', ', '! ', ' ', '... ', '? ', '~ '];
 export function randomUsagi(input = '') {
   const wordCount = input.trim().split(/\s+/).filter(part => /[\p{L}\p{N}]/u.test(part)).length || 1;
@@ -71,8 +90,9 @@ export function randomUsagi(input = '') {
       : wordCount < 10 ? (roll < 0.2 ? 1 : roll < 0.65 ? 2 : 3)
       : (roll < 0.1 ? 1 : roll < 0.35 ? 2 : roll < 0.75 ? 3 : 4);
     const variantCount = wordCount === 1 ? 2 : wordCount <= 3 ? 3 : 5;
+    const choices = wordCount < 4 ? shortSounds : longSounds;
     const parts = Array.from({ length }, () => {
-      const sound = longSounds[Math.floor(Math.random() * longSounds.length)];
+      const sound = choices[Math.floor(Math.random() * choices.length)];
       const variants = repeatedSounds[sound];
       return variants ? variants[Math.floor(Math.random() * variantCount)] : sound;
     });

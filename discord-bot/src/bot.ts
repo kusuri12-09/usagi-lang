@@ -11,7 +11,7 @@ const commands = [
     .addStringOption(option => option.setName('text').setDescription('번역할 말').setRequired(true).setMaxLength(500)),
 ];
 
-const bot = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
+const bot = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 
 bot.once(Events.ClientReady, async () => {
   try {
@@ -44,7 +44,7 @@ bot.on(Events.InteractionCreate, async interaction => {
 bot.on(Events.MessageCreate, async message => {
   if (!message.inGuild() || message.author.bot || message.webhookId) return;
   try {
-    await message.reply({ content: await replyWithMcp(), allowedMentions: { parse: [], repliedUser: false } });
+    await message.reply({ content: await replyWithMcp(message.content), allowedMentions: { parse: [], repliedUser: false } });
   } catch (error) {
     console.error('Usagi reply failed:', error);
   }

@@ -25,5 +25,6 @@ Cloudflare Quick Tunnel은 `cloudflared tunnel --url http://127.0.0.1:3000`으�
 - `translate_to_usagi`: `{ "text": "케이크 맛있다!" }` → `{ "original": "케이크 맛있다!", "translated": "우아", "tag": "tasty", "matched": true, "generated": false }`
 - `generate_usagi_reaction`: `{ "situation": "birthday" }` 또는 `{ "emotion": "happy" }` → 사전 표현. 둘 중 하나만 입력합니다.
 - `generate_random_usagi`: `{}` → 뜻이 없는 새 표현과 `generated: true`. 같은 소리의 반복은 붙이고, 다른 소리 사이에는 쉼표·느낌표·띄어쓰기·말줄임표 등을 넣습니다.
+- `generate_usagi_reply`: `{ "text": "푸루루!!!" }` → 지정된 우사기어면 허용된 문장부호까지 입력한 그대로, 그 밖에는 랜덤 답변. 특수문자는 비교에서 무시하고, 허용되지 않은 특수문자는 답변에서 제거합니다.
 
 상황 값은 루트의 `../dictionary.json`에 있는 `tags`를 사용합니다. 감정은 `happy`, `excited`, `surprised`, `confident`, `sad`, `angry`, `neutral`을 받습니다. 사전에 없는 감정이나 번역 규칙에 맞지 않는 문장은 랜덤 표현을 반환하며, `matched: false`, `generated: true`, `tag: null`로 구분합니다. 이 결과에는 사전적 의미가 없습니다.

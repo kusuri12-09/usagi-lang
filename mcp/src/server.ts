@@ -1,6 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/server';
 import * as z from 'zod/v4';
-import { randomUsagi, reaction, translate } from './core.js';
+import { randomUsagi, reaction, replyToUsagi, translate } from './core.js';
 
 function result(value: Record<string, unknown>) {
   return { content: [{ type: 'text' as const, text: JSON.stringify(value) }], structuredContent: value };
@@ -26,6 +26,11 @@ export function createServer() {
     description: 'Generate a playful new Usagi-like exclamation with no dictionary meaning.',
     inputSchema: z.object({}),
   }, async () => result(randomUsagi()));
+
+  server.registerTool('generate_usagi_reply', {
+    description: 'Reply with the same known sound for selected Usagi expressions, otherwise generate a random reply.',
+    inputSchema: z.object({ text: z.string() }),
+  }, async ({ text }) => result({ expression: replyToUsagi(text) }));
 
   return server;
 }
