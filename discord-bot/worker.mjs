@@ -13,7 +13,7 @@ export class DiscordGateway extends DurableObject {
 
   async fetch(request) {
     if (new URL(request.url).pathname === '/ensure') this.ensureConnected();
-    return Response.json({ connected: this.ready });
+    return Response.json({ connected: this.ready, version: 'reply-punctuation-v1' });
   }
 
   ensureConnected() {
@@ -74,7 +74,7 @@ export class DiscordGateway extends DurableObject {
       headers: { Authorization: `Bot ${this.env.DISCORD_BOT_TOKEN}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ content, message_reference: { message_id: message.id, channel_id: message.channel_id, guild_id: message.guild_id, fail_if_not_exists: false }, allowed_mentions: { parse: [], replied_user: false } }),
     });
-    if (!response.ok) throw new Error(`Discord reply failed: ${response.status}`);
+    if (!response.ok) throw new Error(`Discord reply failed: ${response.status} ${await response.text()}`);
   }
 
   async translate(interaction) {
