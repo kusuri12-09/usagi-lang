@@ -1,20 +1,5 @@
 import { DurableObject } from 'cloudflare:workers';
-import { Client, StreamableHTTPClientTransport } from '@modelcontextprotocol/client';
-
-async function usagi(env, name, args, field) {
-  const client = new Client({ name: 'usagi-discord-worker', version: '0.1.0' });
-  try {
-    await client.connect(new StreamableHTTPClientTransport(new URL('https://mcp.internal/mcp'), {
-      fetch: (input, init) => env.MCP.fetch(input, init),
-    }));
-    const response = await client.callTool({ name, arguments: args });
-    const value = response.structuredContent?.[field];
-    if (response.isError || typeof value !== 'string') throw new Error(`MCP returned no ${field}`);
-    return value;
-  } finally {
-    await client.close();
-  }
-}
+import { randomUsagi, translate as translateText } from '../mcp/src/core.js';
 
 export class DiscordGateway extends DurableObject {
   constructor(ctx, env) {
@@ -83,7 +68,7 @@ export class DiscordGateway extends DurableObject {
 
   async reply(message) {
     if (!message.guild_id || message.author?.bot || message.webhook_id) return;
-    const content = await usagi(this.env, 'generate_random_usagi', {}, 'expression');
+    const content = randomUsagi().expression;
     const response = await fetch(`https://discord.com/api/v10/channels/${message.channel_id}/messages`, {
       method: 'POST',
       headers: { Authorization: `Bot ${this.env.DISCORD_BOT_TOKEN}`, 'Content-Type': 'application/json' },
@@ -101,7 +86,7 @@ export class DiscordGateway extends DurableObject {
     try {
       const text = interaction.data.options?.find(option => option.name === 'text')?.value;
       if (typeof text !== 'string') throw new Error('Missing translate text');
-      content = await usagi(this.env, 'translate_to_usagi', { text }, 'translated');
+      content = translateText(text).translated;
     } catch (error) {
       console.error('Usagi translation failed:', error);
       content = '하아? 잠시 후 다시 말 걸어 줘.';
@@ -119,7 +104,7 @@ export default {
     const path = new URL(request.url).pathname;
     if ((path === '/start' || path === '/self-test') && request.method === 'POST') {
       if (request.headers.get('Authorization') !== `Bearer ${env.DISCORD_BOT_TOKEN}`) return new Response('Unauthorized', { status: 401 });
-      if (path === '/self-test') return Response.json({ translated: await usagi(env, 'translate_to_usagi', { text: '맛있어' }, 'translated'), reply: await usagi(env, 'generate_random_usagi', {}, 'expression') });
+      if (path === '/self-test') return Response.json({ translated: translateText('맛있어').translated, reply: randomUsagi().expression });
       return env.GATEWAY.getByName('usagi').fetch('https://internal/ensure');
     }
     if (path !== '/health') return new Response('Not found', { status: 404 });

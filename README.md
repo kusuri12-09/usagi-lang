@@ -9,7 +9,7 @@
 ## 공개 주소
 
 - 웹 번역기: https://kusuri12-09.github.io/usagi-lang/
-- MCP: https://usagi-lang-mcp.kusuri12.workers.dev/mcp
-- Discord 봇 상태: https://usagi-lang-discord-bot.kusuri12.workers.dev/health
+- MCP: https://usagi-lang.kusuri12.workers.dev/mcp
+- Discord 봇 상태: https://usagi-lang.kusuri12.workers.dev/health
 
-`mcp/wrangler.jsonc`와 `discord-bot/wrangler.jsonc`로 각 Worker를 배포합니다. Discord 봇은 Durable Object에서 Gateway 연결을 유지하며, 분당 한 번 예약 실행으로 끊긴 연결을 다시 시작합니다. 로컬 Discord 봇과 Worker를 동시에 실행하면 메시지에 중복 답글을 달 수 있습니다.
+`mcp/wrangler.jsonc`로 MCP와 Discord 봇을 한 Worker에 배포합니다. Discord 봇은 Durable Object에서 Gateway 연결을 유지하며, 분당 한 번 예약 실행으로 끊긴 연결을 다시 시작합니다. 로컬 Discord 봇과 Worker를 동시에 실행하면 메시지에 중복 답글을 달 수 있습니다.

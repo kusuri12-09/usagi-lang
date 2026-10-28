@@ -4,7 +4,7 @@ Discord 슬래시 명령으로 우사기어를 번역하고, 서버의 일반 �
 
 ## 실행
 
-Cloudflare Worker는 `npx wrangler deploy`로 배포합니다. `DISCORD_BOT_TOKEN`은 `npx wrangler secret put DISCORD_BOT_TOKEN`으로 저장합니다. Worker의 Durable Object가 Discord Gateway에 연결되며, 연결이 끊기면 예약 실행으로 다시 시작합니다. 상태는 `https://usagi-lang-discord-bot.kusuri12.workers.dev/health`에서 확인할 수 있습니다. Worker는 `usagi-lang-mcp` Worker를 서비스 바인딩으로 호출합니다.
+Cloudflare Worker는 `mcp/`에서 `npx wrangler deploy`로 함께 배포합니다. `DISCORD_BOT_TOKEN`은 `mcp/`에서 `npx wrangler secret put DISCORD_BOT_TOKEN`으로 저장합니다. Worker의 Durable Object가 Discord Gateway에 연결되며, 연결이 끊기면 예약 실행으로 다시 시작합니다. 상태는 `https://usagi-lang.kusuri12.workers.dev/health`에서 확인할 수 있습니다. 번역과 랜덤 생성은 공유 코드를 직접 호출합니다.
 
 아래는 로컬 실행 방법입니다. Worker 봇과 동시에 켜지 마세요. 메시지에 중복 답글을 달 수 있습니다.
 

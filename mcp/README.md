@@ -14,7 +14,7 @@ npm start
 
 MCP 클라이언트에는 `node` 명령과 이 프로젝트의 `dist/mcp/src/index.js` 절대 경로를 stdio 서버로 등록하세요. 개발 중에는 `npm run dev`로 실행할 수 있습니다. 테스트는 `npm test`입니다.
 
-Cloudflare Worker는 `npx wrangler deploy`로 배포합니다. 공개 MCP 주소는 `https://usagi-lang-mcp.kusuri12.workers.dev/mcp`입니다.
+Cloudflare Worker는 `npx wrangler deploy`로 배포합니다. 공개 MCP 주소는 `https://usagi-lang.kusuri12.workers.dev/mcp`입니다. 같은 Worker에서 Discord 봇도 실행합니다.
 
 원격 MCP 클라이언트용 HTTP 서버는 `npm run start:http`로 실행합니다. 로컬 주소는 `http://127.0.0.1:3000/mcp`이며, 공개 터널을 붙일 때는 `PUBLIC_HOST`에 터널의 호스트 이름을 설정합니다.
 
