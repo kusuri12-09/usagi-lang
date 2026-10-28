@@ -26,7 +26,7 @@ jobs:
       - name: Prepare website
         run: |
           mkdir _site
-          cp app/index.html app/styles.css app/app.js dictionary.json _site/
+          cp app/index.html app/styles.css app/app.js dictionary.json repeated-sounds.json _site/
           cp -R app/images app/fonts _site/
           touch _site/.nojekyll
       - uses: actions/upload-pages-artifact@v4

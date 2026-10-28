@@ -9,9 +9,13 @@ const rules = [
   [/잡초/, 'weed'], [/최근|요즘/, 'recent'],
 ];
 const sounds = ['야', '하', '푸루', '우라', '으핫', '후응'];
-const separators = [', ', '! ', ' ', '... ', '? '];
+const separators = [', ', '! ', ' ', '... ', '? ', '~ '];
 const dictionaryPromise = fetch('./dictionary.json').then(response => {
   if (!response.ok) throw new Error('사전을 불러오지 못했어요.');
+  return response.json();
+});
+const repeatedSoundsPromise = fetch('./repeated-sounds.json').then(response => {
+  if (!response.ok) throw new Error('반복형 소리를 불러오지 못했어요.');
   return response.json();
 });
 
@@ -24,10 +28,19 @@ document.querySelector('#secret-trigger').addEventListener('click', () => {
   }
 });
 
-function randomUsagi(dictionary) {
+function randomUsagi(dictionary, repeatedSounds, input) {
+  const wordCount = input.trim().split(/\s+/).filter(part => /[\p{L}\p{N}]/u.test(part)).length || 1;
   let expression;
   do {
-    const parts = Array.from({ length: 2 + Math.floor(Math.random() * 3) }, () => sounds[Math.floor(Math.random() * sounds.length)]);
+    const roll = Math.random();
+    const length = wordCount === 1 ? (roll < 0.9 ? 1 : 2) : wordCount <= 3 ? (roll < 0.6 ? 1 : roll < 0.9 ? 2 : 3) : (roll < 0.4 ? 1 : roll < 0.75 ? 2 : 3);
+    const variantCount = wordCount === 1 ? 2 : wordCount <= 3 ? 3 : 5;
+    const choices = [...sounds, ...Object.keys(repeatedSounds)];
+    const parts = Array.from({ length }, () => {
+      const sound = choices[Math.floor(Math.random() * choices.length)];
+      const variants = repeatedSounds[sound];
+      return variants ? variants[Math.floor(Math.random() * variantCount)] : sound;
+    });
     expression = parts[0];
     for (let i = 1; i < parts.length; i++) {
       expression += (parts[i] === parts[i - 1] ? '' : separators[Math.floor(Math.random() * separators.length)]) + parts[i];
@@ -52,11 +65,11 @@ document.querySelector('#translator-form').addEventListener('submit', async even
   button.disabled = true;
   card.classList.remove('is-revealed');
   try {
-    const dictionary = await dictionaryPromise;
+    const [dictionary, repeatedSounds] = await Promise.all([dictionaryPromise, repeatedSoundsPromise]);
     const unsupported = /못했|실패|안\s*됐|슬프|속상/.test(input);
     const tag = unsupported ? undefined : rules.find(([pattern]) => pattern.test(input))?.[1];
-    const entry = tag && dictionary.find(item => item.tags.includes(tag));
-    result.textContent = entry ? entry.expression : randomUsagi(dictionary);
+    const entry = dictionary.find(item => item.expression === input) || (tag && dictionary.find(item => item.tags.includes(tag)));
+    result.textContent = entry ? entry.expression : randomUsagi(dictionary, repeatedSounds, input);
     note.textContent = entry ? '사전에서 딱 맞는 말을 찾았어요!' : '새로운 우사기어가 탄생했어요!';
     result.classList.remove('placeholder');
     copy.disabled = false;
