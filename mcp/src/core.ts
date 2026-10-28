@@ -48,6 +48,9 @@ export function translate(text: string) {
   const normalized = text.trim();
   const exact = dictionary.find(entry => entry.expression === normalized);
   if (exact) return { original: text, translated: exact.expression, tag: exact.tags[0] ?? null, matched: true, generated: false };
+  if (Object.values(repeatedSounds).some(variants => variants.includes(normalized))) {
+    return { original: text, translated: normalized, tag: null, matched: true, generated: false };
+  }
   // shortcut: unsupported negative statements use patterns, expand when real examples show missed forms.
   const unsupported = /못했|실패|안\s*됐|슬프|속상/.test(normalized);
   const tag = unsupported ? undefined : rules.find(([pattern]) => pattern.test(normalized))?.[1];
@@ -56,7 +59,7 @@ export function translate(text: string) {
 }
 
 const sounds = ['야', '하', '푸루', '우라', '으핫', '후응'];
-const longSounds = [...sounds, ...Object.keys(repeatedSounds)];
+const longSounds = [...sounds, ...Object.keys(repeatedSounds).filter(sound => sound !== 'exact')];
 const separators = [', ', '! ', ' ', '... ', '? ', '~ '];
 export function randomUsagi(input = '') {
   const wordCount = input.trim().split(/\s+/).filter(part => /[\p{L}\p{N}]/u.test(part)).length || 1;

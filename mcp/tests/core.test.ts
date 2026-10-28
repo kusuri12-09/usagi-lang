@@ -9,6 +9,12 @@ test('known situations use dictionary expressions', () => {
   assert.equal(translate('하아?').translated, '하아?');
 });
 
+test('repeated sounds are returned unchanged, including exact-only expressions', () => {
+  for (const sound of ['푸루루', '이이이이야아아앗하아아아아', '야아아아아아아아하아아아아']) {
+    assert.deepEqual(translate(sound), { original: sound, translated: sound, tag: null, matched: true, generated: false });
+  }
+});
+
 test('unknown and negated inputs use a clearly marked random fallback', () => {
   const unknownEmotion = reaction('sad');
   assert.equal(unknownEmotion.matched, false);

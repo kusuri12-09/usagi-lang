@@ -38,7 +38,7 @@ function randomUsagi(dictionary, repeatedSounds, input) {
       : wordCount < 10 ? (roll < 0.2 ? 1 : roll < 0.65 ? 2 : 3)
       : (roll < 0.1 ? 1 : roll < 0.35 ? 2 : roll < 0.75 ? 3 : 4);
     const variantCount = wordCount === 1 ? 2 : wordCount <= 3 ? 3 : 5;
-    const choices = [...sounds, ...Object.keys(repeatedSounds)];
+    const choices = [...sounds, ...Object.keys(repeatedSounds).filter(sound => sound !== 'exact')];
     const parts = Array.from({ length }, () => {
       const sound = choices[Math.floor(Math.random() * choices.length)];
       const variants = repeatedSounds[sound];
@@ -72,8 +72,9 @@ document.querySelector('#translator-form').addEventListener('submit', async even
     const unsupported = /못했|실패|안\s*됐|슬프|속상/.test(input);
     const tag = unsupported ? undefined : rules.find(([pattern]) => pattern.test(input))?.[1];
     const entry = dictionary.find(item => item.expression === input) || (tag && dictionary.find(item => item.tags.includes(tag)));
-    result.textContent = entry ? entry.expression : randomUsagi(dictionary, repeatedSounds, input);
-    note.textContent = entry ? '사전에서 딱 맞는 말을 찾았어요!' : '새로운 우사기어가 탄생했어요!';
+    const repeated = Object.values(repeatedSounds).some(variants => variants.includes(input));
+    result.textContent = entry ? entry.expression : repeated ? input : randomUsagi(dictionary, repeatedSounds, input);
+    note.textContent = entry ? '사전에서 딱 맞는 말을 찾았어요!' : repeated ? '반복형 소리를 그대로 돌려드렸어요!' : '새로운 우사기어가 탄생했어요!';
     result.classList.remove('placeholder');
     copy.disabled = false;
   } catch {
